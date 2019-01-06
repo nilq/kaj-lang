@@ -5,11 +5,8 @@
 ### Variables
 
 ```
-a := "hey"
-
-b: int = 10
-
-c: bool =
+a = "hey"
+c =
   true
 ```
 
@@ -18,7 +15,7 @@ c: bool =
 #### As statements
 
 ```
-fn add(a: int, b: int) -> int =
+fn add(a, b) =
   a + b
 ```
 
@@ -27,7 +24,7 @@ fn add(a: int, b: int) -> int =
 Has inferred return type ...
 
 ```
-add := fn(a: int, b: int) => a + b
+add = fn(a, b) => a + b
 ```
 
 ### Literals
@@ -35,13 +32,13 @@ add := fn(a: int, b: int) => a + b
 ### Arrays
 
 ```
-a: [int] = [1, 2, 3, 4, 5]
+a = { 1, 2, 3, 4, 5 }
 ```
 
 #### Tables
 
 ```
-a: table = {
+a = {
   key: 100
   100
   20
@@ -64,12 +61,12 @@ else
 #### Switch
 
 ```
-a := 10
+a = 10
 
 switch a
-  0  => print("zero")
-  5  => print("five")
-  10 => print("ten")
+  | 0  => print("zero")
+  | 5  => print("five")
+  | 10 => print("ten")
 ```
 
 ### Loops
@@ -77,12 +74,12 @@ switch a
 #### For
 
 ```
-for i := 1, 100
+for i = 1, 100
   print(i)
 ```
 
 ```
-for i in [1, 2, 5, 6]
+for i in { 1, 2, 5, 6 }
   print(i)
 ```
 
