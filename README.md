@@ -1,2 +1,2 @@
 # loom
-🍡 A superset of Lua that compiles to Lua
+🍡 A programming language that transpiles to Lua
