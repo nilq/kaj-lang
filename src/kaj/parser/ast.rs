@@ -43,7 +43,7 @@ pub enum ExpressionNode {
   Array(Vec<Expression>),
   Table(Vec<(String, Expression)>),
   Call(Rc<Expression>, Vec<Expression>),
-  Index(Rc<Expression>, Rc<Expression>),
+  Index(Rc<Expression>, Rc<Expression>, bool), // bool: whether or not it's a method index
   If(Rc<Expression>, Vec<Statement>, Option<Vec<(Option<Expression>, Vec<Statement>, Pos)>>),
   Empty,
   EOF,

@@ -504,14 +504,14 @@ impl<'p> Parser<'p> {
           let position = expression.pos.clone();
 
           let index = Expression::new(
-            ExpressionNode::Index(Rc::new(expression), Rc::new(expr)),
+            ExpressionNode::Index(Rc::new(expression), Rc::new(expr), false),
             self.span_from(position)
           );
 
           self.parse_postfix(index)
         },
 
-        "." => {
+        c @ "." | c @ "\\" => {
           let position = self.current_position();
           self.next()?;
 
@@ -527,7 +527,8 @@ impl<'p> Parser<'p> {
           let index = Expression::new(
             ExpressionNode::Index(
               Rc::new(expression),
-              Rc::new(id)
+              Rc::new(id),
+              c == "\\"
             ),
             self.span_from(position)
           );

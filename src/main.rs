@@ -8,29 +8,14 @@ use self::kaj::parser::*;
 
 fn main() {
   let test = r#"
-a = 100
-
 player = {
   x: 100
   y: 100
 }
 
-fun player.move self x y =
+fun player\move x y =
   self.x = self.x + x
   self.y = self.y + y
-
-fun foo.load a =
-  return [a, 1, 3, 4]
-
-fun bar a b =
-  if b + a == 110
-    return 10
-  elif true
-    return "hey"
-  else
-    return "hey"
-
-bar(100 100)
   "#;
 
   let source = Source::from("<main>", test.lines().map(|x| x.into()).collect::<Vec<String>>());
