@@ -35,6 +35,9 @@ impl<'l> Lexer<'l> {
         KeyMatcher::new(Keyword, &[
           "fun",
           "return",
+          "if",
+          "elif",
+          "else",
         ])
       )
     );

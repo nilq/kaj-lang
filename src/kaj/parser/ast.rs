@@ -43,8 +43,7 @@ pub enum ExpressionNode {
   Array(Vec<Expression>),
   Call(Rc<Expression>, Vec<Expression>),
   Index(Rc<Expression>, Rc<Expression>),
-  Block(Vec<Statement>),
-  If(Rc<Expression>, Rc<Expression>, Option<Vec<(Option<Expression>, Expression, Pos)>>),
+  If(Rc<Expression>, Vec<Statement>, Option<Vec<(Option<Expression>, Vec<Statement>, Pos)>>),
   Empty,
   EOF,
 }

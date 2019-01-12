@@ -57,7 +57,7 @@ impl<'p> Parser<'p> {
           "=" => {
             self.next()?;
 
-            Statement::new(
+            let result = Statement::new(
               StatementNode::Assignment(
                 Expression::new(
                   ExpressionNode::Identifier(name),
@@ -67,7 +67,11 @@ impl<'p> Parser<'p> {
                 self.parse_expression()?
               ),
               position,
-            )
+            );
+
+            self.new_line()?;
+
+            result
           },
 
           _ => {
@@ -80,11 +84,17 @@ impl<'p> Parser<'p> {
             if self.current_lexeme() == "=" {
               self.next()?;
 
-              Statement::new(
+              let result = Statement::new(
                 StatementNode::Assignment(expression, self.parse_expression()?),
                 position
-              )
+              );
+
+              self.new_line()?;
+
+              result
             } else {
+              self.new_line()?;
+
               Statement::new(
                 StatementNode::Expression(expression),
                 position,
@@ -99,20 +109,27 @@ impl<'p> Parser<'p> {
           self.next()?;
 
           if ["}", "\n"].contains(&self.current_lexeme().as_str()) {
+            self.new_line()?;
+
             Statement::new(
               StatementNode::Return(None),
               position
             )
           } else {
-            Statement::new(
+            let result = Statement::new(
               StatementNode::Return(Some(self.parse_expression()?)),
               self.span_from(position)
-            )
+            );
+
+            self.new_line()?;
+
+            result
           }
         },
 
         "break" => {
           self.next()?;
+          self.new_line()?;
 
           Statement::new(
             StatementNode::Break,
@@ -122,6 +139,7 @@ impl<'p> Parser<'p> {
 
         "skip" => {
           self.next()?;
+          self.new_line()?;
 
           Statement::new(
             StatementNode::Skip,
@@ -193,11 +211,17 @@ impl<'p> Parser<'p> {
         if self.current_lexeme() == "=" {
           self.next()?;
 
-          Statement::new(
+          let result = Statement::new(
             StatementNode::Assignment(expression, self.parse_expression()?),
             position
-          )
+          );
+
+          self.new_line()?;
+
+          result
         } else {
+          self.new_line()?;
+
           Statement::new(
             StatementNode::Expression(expression),
             position,
@@ -205,8 +229,6 @@ impl<'p> Parser<'p> {
         }
       },
     };
-
-    self.new_line()?;
 
     Ok(statement)
   }
@@ -242,8 +264,6 @@ impl<'p> Parser<'p> {
     }
 
     self.indent = backup_indent;
-
-    self.index -= 1; // meeh might become a problem
 
     Ok(stack)
   }
@@ -337,11 +357,6 @@ impl<'p> Parser<'p> {
         },
 
         Symbol => match self.current_lexeme().as_str() {
-          "{" => Expression::new(
-            ExpressionNode::Block(self.parse_block_of(("{", "}"), &Self::_parse_statement)?),
-            position
-          ),
-
           "[" => Expression::new(
             ExpressionNode::Array(self.parse_block_of(("[", "]"), &Self::_parse_expression_comma)?),
             self.span_from(position)
@@ -382,15 +397,8 @@ impl<'p> Parser<'p> {
 
             let condition   = Rc::new(self.parse_expression()?);
             let if_position = self.span_from(position.clone());
-
-            let body        = Rc::new(
-              Expression::new(
-                ExpressionNode::Block(self.parse_block_of(("{", "}"), &Self::_parse_statement)?),
-                position
-              )
-            );
-
-            let mut elses = Vec::new();
+            let body        = self.parse_body()?;
+            let mut elses   = Vec::new();
 
             loop {
               let branch_position = self.current_position();
@@ -400,23 +408,21 @@ impl<'p> Parser<'p> {
                   self.next()?;
 
                   let condition = self.parse_expression()?;
-                  let position  = self.current_position();
-                  let body      = Expression::new(
-                    ExpressionNode::Block(self.parse_block_of(("{", "}"), &Self::_parse_statement)?),
-                    position
-                  );
+
+                  self.eat_lexeme("\n")?;
+                  self.next_newline()?;
+
+                  let body = self.parse_body()?;
 
                   elses.push((Some(condition), body, branch_position))
                 },
 
                 "else" => {
                   self.next()?;
+                  self.eat_lexeme("\n")?;
+                  self.next_newline()?;
 
-                  let position  = self.current_position();
-                  let body      = Expression::new(
-                    ExpressionNode::Block(self.parse_block_of(("{", "}"), &Self::_parse_statement)?),
-                    position
-                  );
+                  let body = self.parse_body()?;
 
                   elses.push((None, body, branch_position))
                 },
@@ -431,13 +437,13 @@ impl<'p> Parser<'p> {
             )
           },
 
-          ref symbol => return Err(
+          ref symbol => panic!() /*return Err(
             response!(
               Wrong(format!("unexpected keyword `{}`", symbol)),
               self.source.file,
               self.current_position()
             )
-          )
+          )*/
         },
 
         ref token_type => return Err(
@@ -597,13 +603,17 @@ impl<'p> Parser<'p> {
     if self.remaining() > 0 {
       match self.current_lexeme().as_str() {
         "\n" => self.next(),
-        _    => panic!() /*Err(
-          response!(
-            Wrong(format!("expected new line found: `{}`", self.current_lexeme())),
-            self.source.file,
-            self.current_position()
-          )
-      )*/
+        _    => {
+            panic!();
+
+            Err(
+              response!(
+                Wrong(format!("expected new line found: `{}`", self.current_lexeme())),
+                self.source.file,
+                self.current_position()
+              )
+            )
+        }
       }
     } else {
       Ok(())
