@@ -15,7 +15,8 @@ world = []
 
 fun make_player x y =
   return {
-    x, y
+    x: x
+    y: y
   }
 
 fun love.load =
