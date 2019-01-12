@@ -3,6 +3,7 @@ extern crate colored;
 mod kaj;
 
 use self::kaj::source::*;
+use self::kaj::lexer::*;
 
 fn main() {
   let test = r#"
