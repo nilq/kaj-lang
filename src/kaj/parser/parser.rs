@@ -245,7 +245,7 @@ impl<'p> Parser<'p> {
       if self.indent % self.indent_standard != 0 {
         return Err(
           response!(
-            Wrong(format!("found inconsistently indented token")),
+            Wrong(format!("found inconsistently indented token, expected {} found {}", self.indent, self.indent_standard)),
             self.source.file,
             self.current_position()
           )
@@ -397,6 +397,10 @@ impl<'p> Parser<'p> {
 
             let condition   = Rc::new(self.parse_expression()?);
             let if_position = self.span_from(position.clone());
+
+            self.eat_lexeme("\n")?;
+            self.next_newline()?;
+
             let body        = self.parse_body()?;
             let mut elses   = Vec::new();
 
@@ -473,7 +477,7 @@ impl<'p> Parser<'p> {
     match self.current_type() {
       TokenType::Symbol => match self.current_lexeme().as_str() {
         "(" => {
-          let args = self.parse_block_of(("(", ")"), &Self::_parse_expression_comma)?;
+          let args = self.parse_block_of(("(", ")"), &Self::_parse_expression_no_comma)?;
 
           let position = expression.pos.clone();
 
@@ -699,6 +703,7 @@ impl<'p> Parser<'p> {
 
       Ok(lexeme)
     } else {
+      panic!();
       Err(
         response!(
           Wrong(format!("expected `{}`, found `{}`", lexeme, self.current_lexeme())),
@@ -870,6 +875,23 @@ impl<'p> Parser<'p> {
 
 
 
+  // Static method for parsing sequence `expr* ,* \n*` - for things like [1, 2, 3, 4,]
+  fn _parse_expression_no_comma(self: &mut Self) -> Result<Option<Expression>, ()> {
+    if self.remaining() > 0 && self.current_lexeme() == "\n" {
+      self.next()?
+    }
+
+    let expression = Self::_parse_expression(self);
+
+    if self.remaining() > 0 && self.current_lexeme() == "\n" {
+      self.next()?
+    }
+
+    expression
+  }
+
+
+
   fn _parse_param(self: &mut Self) -> Result<Option<(String)>, ()> {
     if self.remaining() > 0 && self.current_lexeme() == "\n" {
       self.next()?
@@ -879,16 +901,13 @@ impl<'p> Parser<'p> {
       return Ok(None)
     }
 
-    let mut splat = false;
-    let position  = self.current_position();
-
     let name = self.eat_type(&TokenType::Identifier)?;
 
     if self.remaining() > 0 {
-      if ![",", "\n"].contains(&self.current_lexeme().as_str()) {
+      if !["\n"].contains(&self.current_lexeme().as_str()) {
         return Err(
           response!(
-            Wrong(format!("expected `,` or newline, found `{}`", self.current_lexeme())),
+            Wrong(format!("expected space or newline, found `{}`", self.current_lexeme())),
             self.source.file,
             self.current_position()
           )

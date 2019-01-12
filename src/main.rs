@@ -13,29 +13,15 @@ a = 100
 fun foo.load a =
   return [a, 1, 3, 4]
 
-fun bar1 =
-  if 10 + a == 110
+fun bar a b =
+  if b + a == 110
     return 10
   elif true
     return "hey"
   else
     return "hey"
 
-fun bar2 =
-  if 10 + a == 110
-    return 10
-  elif true
-    return "hey"
-  else
-    return "hey"
-
-fun bar3 =
-  if 10 + a == 110
-    return 10
-  elif true
-    return "hey"
-  else
-    return "hey"
+bar(100 100)
   "#;
 
   let source = Source::from("<main>", test.lines().map(|x| x.into()).collect::<Vec<String>>());
