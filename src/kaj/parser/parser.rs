@@ -513,6 +513,7 @@ impl<'p> Parser<'p> {
 
         "." => {
           let position = self.current_position();
+          self.next()?;
 
           let id = Expression::new(
             ExpressionNode::Identifier(
@@ -613,6 +614,7 @@ impl<'p> Parser<'p> {
       match self.current_lexeme().as_str() {
         "\n" => self.next(),
         _    => {
+          panic!();
           Err(
             response!(
               Wrong(format!("expected new line found: `{}`", self.current_lexeme())),

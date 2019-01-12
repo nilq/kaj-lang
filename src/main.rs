@@ -15,6 +15,10 @@ player = {
   y: 100
 }
 
+fun player.move self x y =
+  self.x = self.x + x
+  self.y = self.y + y
+
 fun foo.load a =
   return [a, 1, 3, 4]
 
