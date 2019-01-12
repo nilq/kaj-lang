@@ -4,17 +4,17 @@ mod kaj;
 
 use self::kaj::source::*;
 use self::kaj::lexer::*;
+use self::kaj::parser::*;
 
 fn main() {
   let test = r#"
 a = 100
 
-fun foo a =
-  a = a + 100
+fun foo.load a =
+  return a + 100
 
-  return a
-
-foo(a)
+fun bar =
+  return 10
   "#;
 
   let source = Source::from("<main>", test.lines().map(|x| x.into()).collect::<Vec<String>>());
@@ -28,5 +28,14 @@ foo(a)
     } else {
       return
     }
+  }
+
+  let mut parser  = Parser::new(tokens, &source);
+
+  match parser.parse() {
+    Ok(ref ast) => {
+      println!("{:#?}", ast)
+    },
+    _ => (),
   }
 }
