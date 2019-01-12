@@ -357,6 +357,11 @@ impl<'p> Parser<'p> {
         },
 
         Symbol => match self.current_lexeme().as_str() {
+          "{" => Expression::new(
+            ExpressionNode::Table(self.parse_block_of(("{", "}"), &Self::_parse_definition_comma)?),
+            self.span_from(position)
+          ),
+
           "[" => Expression::new(
             ExpressionNode::Array(self.parse_block_of(("[", "]"), &Self::_parse_expression_comma)?),
             self.span_from(position)
@@ -608,15 +613,13 @@ impl<'p> Parser<'p> {
       match self.current_lexeme().as_str() {
         "\n" => self.next(),
         _    => {
-            panic!();
-
-            Err(
-              response!(
-                Wrong(format!("expected new line found: `{}`", self.current_lexeme())),
-                self.source.file,
-                self.current_position()
-              )
+          Err(
+            response!(
+              Wrong(format!("expected new line found: `{}`", self.current_lexeme())),
+              self.source.file,
+              self.current_position()
             )
+          )
         }
       }
     } else {

@@ -10,6 +10,11 @@ fn main() {
   let test = r#"
 a = 100
 
+player = {
+  x: 100
+  y: 100
+}
+
 fun foo.load a =
   return [a, 1, 3, 4]
 

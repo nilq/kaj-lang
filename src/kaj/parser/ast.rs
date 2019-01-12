@@ -41,6 +41,7 @@ pub enum ExpressionNode {
   Identifier(String),
   Binary(Rc<Expression>, Operator, Rc<Expression>),
   Array(Vec<Expression>),
+  Table(Vec<(String, Expression)>),
   Call(Rc<Expression>, Vec<Expression>),
   Index(Rc<Expression>, Rc<Expression>),
   If(Rc<Expression>, Vec<Statement>, Option<Vec<(Option<Expression>, Vec<Statement>, Pos)>>),
