@@ -1,110 +1,33 @@
-# noom
+# Kaj
 
-## Syntax
+A programming language for generic use, designed with following ideas in mind:
 
-### Variables
+- To have completely dynamic, thus just as unreasonably hard to debug as Lua
+- To have lots of sugar and a less wordy syntax
+- To borrow cool concepts from other languages like F#, Lobster, HolyC, Rust and maybe others 
 
-```
-a = "hey"
-c =
-  true
-```
-
-### Functions
-
-#### As statements
+## A taste of Kaj
 
 ```
-fn add(a, b) =
-  a + b
-```
+use kaj.tables (*)
 
-#### As expressions
+world = []
 
-Has inferred return type ...
+fun make_player x y =
+  return {
+    x, y
+  }
 
-```
-add = fn(a, b) => a + b
-```
-
-### Literals
-
-### Arrays
-
-```
-a = { 1, 2, 3, 4, 5 }
-```
-
-#### Tables
-
-```
-a = {
-  key: 100
-  100
-  20
-}
-```
-
-### Flow-control
-
-#### If
-
-```
-if true
-  print("true is true")
-elif
-  print("true isn't true")
-else
-  print("true is something else")
-```
-
-#### Switch
-
-```
-a = 10
-
-switch a
-  | 0  => print("zero")
-  | 5  => print("five")
-  | 10 => print("ten")
-```
-
-### Loops
-
-#### For
-
-```
-for i = 1, 100
-  print(i)
+fun love.load =
+  world.push(make_player(100 100))
 ```
 
 ```
-for i in { 1, 2, 5, 6 }
-  print(i)
-```
+use entities (*)
 
-```
-for i in 0 .. 100
-  print(i)
-```
-
-#### Loop
-
-```
-loop
-  print("this is forever")
-```
-
-```
-a := 1
-
-loop a < 100
-  print(a)
-
-  a += 1
-```
-
-```
-loop 10
-  print("ten times")
+-- match-pattern functions
+function spawn_from_color color x y =
+  | 'black'  => make_block(x y)
+  | 'yellow' => make_player(x y)
+  | _        => error('no such thing')
 ```
